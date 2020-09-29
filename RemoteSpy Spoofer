@@ -1,0 +1,36 @@
+getgenv().SpoofTABLE = true
+local gameMeta = getrawmetatable(game)
+setreadonly(gameMeta, false)
+local oldNamecall = gameMeta.__namecall
+local method = nil
+local spoofRemote = {}
+
+local function returnData(requestTable, requestData)
+    for _, data in next, requestTable do
+        if data == requestData then
+            return true
+        else
+        end
+    end
+    return false
+end
+
+for _, remote in next, game:GetDescendants() do
+    if remote:IsA("RemoteEvent") or remote:IsA("RemoteFunction") then
+        table.insert(spoofRemote, remote.Name)
+    end
+end
+
+gameMeta.__namecall = newcclosure(function(remote, ...)
+    local arguments = {...}
+    local method = "FireServer" or "InvokeServer"
+    if returnData(spoofRemote, remote.Name) == true then
+        if getgenv().SpoofTABLE == true then
+            remote[method](remote, unpack(arguments))
+        else
+            remote[method](oldNamecall(remote, ...))
+        end
+        return
+    end
+    return oldNamecall(remote, ...)
+end)
