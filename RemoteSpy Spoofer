@@ -15,8 +15,18 @@ local function returnData(requestTable, requestData)
     return false
 end
 
+function sendNotification(title, text, icon)
+	game:GetService("StarterGui"):SetCore("SendNotification", {
+		Title = tostring(title),
+		Text = tostring(text),
+		Icon = "http://www.roblox.com/asset/?id=1204401092"
+	})
+end
+
+sendNotification("Remote Spoofer","Loading")
+
 for _, remote in next, game:GetDescendants() do
-    if remote:IsA("RemoteEvent") or remote:IsA("RemoteFunction") then
+    if remote:IsA("RemoteEvent") or remote:IsA("RemoteFunction") and not table.find(spoofRemote, remote.Name) then
         table.insert(spoofRemote, remote.Name)
     end
 end
@@ -34,3 +44,5 @@ gameMeta.__namecall = newcclosure(function(remote, ...)
     end
     return oldNamecall(remote, ...)
 end)
+
+sendNotification("Remote Spoofer","Loaded")
