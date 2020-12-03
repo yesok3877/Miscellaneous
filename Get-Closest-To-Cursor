@@ -3,7 +3,7 @@ local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 local Camera = workspace.CurrentCamera
 
-local getTarget = function()
+return function()
 	local closestTarg = math.huge
 	local Target = nil
 	for _, Player in next, Players:GetPlayers() do
@@ -32,5 +32,3 @@ local getTarget = function()
 	end
 	return Target
 end
-
-return getTarget
