@@ -10,7 +10,6 @@ return function()
         if Player ~= LocalPlayer then
             local playerCharacter = Player.Character
             if playerCharacter then
-                local playerHumanoid = playerCharacter:FindFirstChild("Humanoid")
                 local playerHumanoid = playerCharacter:FindFirstChild("HumanoidRootPart")
                 if playerHumanoid then
                     local hitVector, onScreen = Camera:WorldToScreenPoint(playerHumanoid.Position)
