@@ -21,9 +21,7 @@ return function()
                                 Target = Player
                                 closestTarg = hitTargMagnitude
                             end
-                        else
                         end
-                    else
                     end
                 end
             end
