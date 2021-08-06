@@ -1,3 +1,4 @@
+local RUNSERVICE = game:GetService("RunService")
 local TERRAIN = game.Workspace.Terrain
 
 local BEAM = Instance.new("Beam")
@@ -8,9 +9,10 @@ BEAM.Segments = 20
 BEAM.Width0 = 0.1
 BEAM.Width1 = 0.1
 
-local TimerClass = require(script:WaitForChild("Timer"))
-
 -- Class
+
+local Timer = {}
+Timer.__index = Timer
 
 local Trajectory = {}
 Trajectory.__index = Trajectory
@@ -57,6 +59,31 @@ local function drawBeamProjectile(g, v0, x0, t)
 end
 
 -- Public Constructors
+
+function Timer.new(startTime)
+	local self = setmetatable({}, Timer)
+	
+	self.Active = false
+	self.StartTime = startTime
+	self.Time = startTime
+	self.Events = {}
+	
+	self.TimerEvent = RUNSERVICE.RenderStepped:Connect(function(dt)
+		if (self.Active) then
+			self.Time = self.Time + dt
+			
+			local events = self.Events
+			for i = #events, 1, -1 do
+				if (self.Time >= events[i][1]) then
+					events[i][2](self.Time)
+					table.remove(events, i)
+				end
+			end
+		end
+	end)
+	
+	return self
+end
 
 function Trajectory.new(gravity)
 	local self = setmetatable({}, Trajectory)
@@ -145,7 +172,7 @@ end
 
 function Trajectory:Travel(part, path)
 	local t = 0
-	local timer = TimerClass.new(0)
+	local timer = Timer.new(0)
 	
 	local x0, v0, dt = unpack(path[1])
 	part.CFrame = CFrame.new(x0, x0 + v0)
