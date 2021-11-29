@@ -115,7 +115,7 @@ local Library do
 
                 for Index = 1, Count(Constant) do
                     if self.Search:Key(rawget(Constant, Index)) and not Find(self.Function.Found, Function) then
-                        Delay()
+                        --Delay()
                         print("     ", Function)
                         Insert(self.Function.Found, Function)
                     end
@@ -130,7 +130,7 @@ local Library do
                     local Search = self.Search
 
                     if (Search:Instance(Value) or Search:Class(Value)) and not Find(self.Function.Found, Function) then
-                        Delay()
+                        --Delay()
                         print("     ", Function)
                         Insert(self.Function.Found, Function)
                     end
@@ -172,7 +172,7 @@ local Garbage = getgc(true) do
         local Object = rawget(Garbage, Index)
 
         if typeof(Object) == "function" and islclosure(Object) and getinfo(Object).name ~= "" then
-            Delay()
+            --Delay()
             Library:Scan(Object)
         end
     end
@@ -184,7 +184,7 @@ do
     local Array = Library.Function.Suggest
 
     for Index = 1, Count(Array) do
-        Delay()
+        --Delay()
         print("     ", rawget(Array, Index))
     end
 end
