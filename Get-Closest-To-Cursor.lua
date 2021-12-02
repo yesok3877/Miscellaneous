@@ -19,7 +19,7 @@ return function()
             local Position, Visible = ScreenPoint(Camera, Player.Character.PrimaryPart.Position)
             
             if Visible then
-                local Distance = Vector2((Position.X - Mouse.X), (Position.Y - Mouse.Y)).magnitude
+                local Distance = Vector2((Position.X - Mouse.X), (Position.Y - Mouse.Y)).Magnitude
                 
                 if Distance <= Range then
                     Range = Distance 
