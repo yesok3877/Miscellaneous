@@ -6,8 +6,10 @@ local Mouse = LocalPlayer:GetMouse()
 local Ancestor = game.FindFirstAncestor
 local Descendant = game.IsDescendantOf
 local Ray = Ray.new
+local String = tostring
 local Type = typeof
 local Get = rawget
+local Select = select
 local Floor = math.floor
 local Find = table.find
 local Insert = table.insert
@@ -26,10 +28,10 @@ local Library do
         Instance = {Camera, Mouse, Character, Ray},
 
         Key = {
-            Function = {"shoot", "fire", "bullet", "projectile", "hit", "unit", "trajectory"},
-            Instance = {"barrel", "flash", "muzzle", "sight", "aim", "shoot", "fire", "bullet", "unit", "unitray"},
-            Class = {"Part", "Attachment", "MeshPart"},
-            Ignore = {"CameraModule", "PlayerModule", "Chat", "ClientChatModules", "CameraScript", "ControlScript", "CorePackages", "CoreGui", "RobloxGui", "Animate", "ChatScript", "BubbleChat", "PlayerScriptsLoader"}
+            Function = {'shoot', 'fire', 'bullet', 'projectile', 'hit', 'unit', 'trajectory'},
+            Instance = {'barrel', 'flash', 'muzzle', 'sight', 'aim', 'shoot', 'fire', 'bullet', 'unit', 'unitray'},
+            Class = {'Part', 'Attachment', 'MeshPart'},
+            Ignore = {'CameraModule', 'PlayerModule', 'Chat', 'ClientChatModules', 'CameraScript', 'ControlScript', 'CorePackages', 'CoreGui', 'RobloxGui', 'Animate', 'ChatScript', 'BubbleChat', 'PlayerScriptsLoader'}
         },
 
         Function = {
@@ -39,13 +41,13 @@ local Library do
 
         Search = {
             Instance = function(self, Value)
-                if Type(Value) == "Instance" then
+                if Type(Value) == 'Instance' then
                     local Array = Library.Instance
 
                     for Index = 1, #Array do
                         local Instance = Get(Array, Index)
                         
-                        if (Value == Instance or select(2, pcall(function()
+                        if (Value == Instance or Select(2, pcall(function()
                             return Descendant(Value, Instance)
                         end))) then
                             return Value
@@ -54,20 +56,20 @@ local Library do
                 end
             end,
             Key = function(self, Value)
-                if Type(Value) == "string" then
+                if Type(Value) == 'string' then
                     local Array = Library.Key.Instance
 
                     for Index = 1, #Array do
                         local Instance = Get(Array, Index)
 
-                        if Match(Lower(tostring(Value)), Instance) then
+                        if Match(Lower(String(Value)), Instance) then
                             return Value
                         end
                     end
                 end
             end,
             Class = function(self, Value)
-                if Type(Value) == "Instance" then
+                if Type(Value) == 'Instance' then
                     local Array = Library.Key.Class
 
                     for Index = 1, #Array do
@@ -99,12 +101,12 @@ local Library do
                 for Index = 1, #Array do
                     local Script = Get(Array, Index)
 
-                    if (Source.name == Script or select(2, pcall(function()
+                    if (Source.name == Script or Select(2, pcall(function()
                         return Ancestor(Source, Script)
                     end))) then
                         return
                     else
-                        local Ancestor = Split(Info.source, ".")
+                        local Ancestor = Split(String(Info.source), '.')
 
                         for Index = 1, #Ancestor do
                             if Find(Array, Get(Ancestor, Index)) then
@@ -119,10 +121,14 @@ local Library do
                 local Function = Info.name
 
                 for Index = 1, #Constant do
-                    if self.Search:Key(Get(Constant, Index)) and not Find(self.Function.Found, Function) then
-                        --Delay()
-                        print("     ", Function)
-                        Insert(self.Function.Found, Function)
+                    if self.Search:Key(Get(Constant, Index)) then
+                        local Format = Format(('"%s"' .. '  -->  ' .. Function), Source.name)
+
+                        if not Find(self.Function.Found, Format) then
+                            --Delay()
+                            print('     ', Format)
+                            Insert(self.Function.Found, Format)
+                        end
                     end
                 end
             end
@@ -134,10 +140,14 @@ local Library do
                     local Value = Get(Constant, Index)
                     local Search = self.Search
 
-                    if (Search:Instance(Value) or Search:Class(Value)) and not Find(self.Function.Found, Function) then
-                        --Delay()
-                        print("     ", Function)
-                        Insert(self.Function.Found, Function)
+                    if (Search:Instance(Value) or Search:Class(Value)) then
+                        local Format = Format(('"%s"' .. '  -->  ' .. Function), Source.name)
+
+                        if not Find(self.Function.Found, Format) then
+                            --Delay()
+                            print('     ', Format)
+                            Insert(self.Function.Found, Format)
+                        end
                     end
                 end
             end
@@ -148,7 +158,7 @@ local Library do
 
                 for Index = 1, #Array do
                     local Name = Get(Array, Index)
-                    local Format = Format((Function .. " (%i, %i)"), Info.numparams, #Proto)
+                    local Format = Format((Function .. ' (%i, %i)'), Info.numparams, #Proto)
 
                     if Match(Lower(Function), Name) and not Find(self.Function.Suggest, Format) then
                         Insert(self.Function.Suggest, Format)
@@ -167,35 +177,35 @@ end
 
 local Time = tick()
 
-local Separate = string.rep("---", 100)
+local Separate = string.rep('---', 100)
 print(Separate)
-print("Functions Found:")
+print('Functions Found:')
 
 local Garbage = getgc(true) do
 
     for Index = 1, #Garbage do
         local Object = Get(Garbage, Index)
 
-        if Type(Object) == "function" and islclosure(Object) and Info(Object).name ~= "" then
+        if Type(Object) == 'function' and islclosure(Object) and Info(Object).name ~= '' then
             --Delay()
             Library:Scan(Object)
         end
     end
 end
 
-print("Functions Suggested:")
+print('Functions Suggested:')
 
 do
     local Array = Library.Function.Suggest
 
     for Index = 1, #Array do
         --Delay()
-        print("     ", Get(Array, Index))
+        print('     ', Get(Array, Index))
     end
 end
 
-print("Took", Floor(tick() - Time), "Seconds To Complete.")
-print(#Library.Function.Found, "Functions Were Scanned.")
-print("Accuracy:", (Floor((#Library.Function.Suggest / #Library.Function.Found) * 100) .. "%"))
+print('Took', Floor(tick() - Time), 'Seconds To Complete.')
+print(#Library.Function.Found, 'Functions Were Scanned.')
+print('Accuracy:', (Floor((#Library.Function.Suggest / #Library.Function.Found) * 100) .. '%'))
 
 print(Separate)
