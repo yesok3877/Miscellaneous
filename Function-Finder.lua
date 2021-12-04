@@ -168,6 +168,7 @@ local Library do
 
             do
                 for Index = 1, #Proto do
+                    --Delay()
                     self:Scan(Get(Proto, Index))
                 end
             end
