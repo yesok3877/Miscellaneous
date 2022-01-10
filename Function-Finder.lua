@@ -10,6 +10,8 @@ local String = tostring
 local Type = typeof
 local Get = rawget
 local Select = select
+local Call = pcall
+local Closure = islclosure
 local Floor = math.floor
 local Find = table.find
 local Insert = table.insert
@@ -47,9 +49,7 @@ local Library do
                     for Index = 1, #Array do
                         local Instance = Get(Array, Index)
                         
-                        if (Value == Instance or Select(2, pcall(function()
-                            return Descendant(Value, Instance)
-                        end))) then
+                        if (Value == Instance or Select(2, Call(Descendant, Value, Instance))) then
                             return Value
                         end
                     end
@@ -101,9 +101,7 @@ local Library do
                 for Index = 1, #Array do
                     local Script = Get(Array, Index)
 
-                    if (Source.name == Script or Select(2, pcall(function()
-                        return Ancestor(Source, Script)
-                    end))) then
+                    if (Source.name == Script or Select(2, Call(Ancestor, Source, Script))) then
                         return
                     else
                         local Ancestor = Split(String(Info.source), '.')
@@ -122,7 +120,7 @@ local Library do
 
                 for Index = 1, #Constant do
                     if self.Search:Key(Get(Constant, Index)) then
-                        local Format = Format(('"%s"' .. '  -->  ' .. Function), Source.name)
+                        local Format = Format(('"%s"' .. '  -->  ' .. Function), (String(Source) or 'nil'))
 
                         if not Find(self.Function.Found, Format) then
                             --Delay()
@@ -187,7 +185,7 @@ local Garbage = getgc(true) do
     for Index = 1, #Garbage do
         local Object = Get(Garbage, Index)
 
-        if Type(Object) == 'function' and islclosure(Object) and Info(Object).name ~= '' then
+        if Type(Object) == 'function' and Closure(Object) and Info(Object).name ~= '' then
             --Delay()
             Library:Scan(Object)
         end
