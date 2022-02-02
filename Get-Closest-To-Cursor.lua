@@ -6,14 +6,14 @@ local Camera = workspace.CurrentCamera
 local ScreenPoint = Camera.WorldToScreenPoint
 local Children = Players.GetPlayers
 local Vector2 = Vector2.new
-local Elements = table.getn
+local Get = rawget
 
 return function()
     local Range, Target = math.huge
-    local Child = Children(Players)
+    local Players = Children(Players)
     
-    for Index = 1, Elements(Child) do
-        local Player = rawget(Child, Index)
+    for Index = 1, #Players do
+        local Player = Get(Players, Index)
         
         if Player ~= Players.LocalPlayer and Player.Character and Player.Character.PrimaryPart then
             local Position, Visible = ScreenPoint(Camera, Player.Character.PrimaryPart.Position)
