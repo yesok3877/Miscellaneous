@@ -15,7 +15,7 @@ return function()
     for Index = 1, #Players do
         local Player = Get(Players, Index)
         
-        if Player ~= Players.LocalPlayer and Player.Character and Player.Character.PrimaryPart then
+        if Player ~= LocalPlayer and Player.Character and Player.Character.PrimaryPart then
             local Position, Visible = ScreenPoint(Camera, Player.Character.PrimaryPart.Position)
             
             if Visible then
