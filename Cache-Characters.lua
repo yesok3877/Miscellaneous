@@ -10,7 +10,7 @@
     - allocated memory (i.e. garbage collection) is accessible
     - a table that contains all character models inside the workspace is present in memory
 --]]
-assert(getgenv, "global environment is not present"); do
+assert(getfenv, "environment is not present"); do
     local function pullulate(table)
         local environment = getfenv(0);
         --
@@ -20,7 +20,7 @@ assert(getgenv, "global environment is not present"); do
         --
         return environment;
     end;
-    -- globalizing conventional utilities so that the runtime may open up
+    -- pullulating conventional utilities so that the runtime may open up
     pullulate({
         game_load = game.IsLoaded;
         game_service = setmetatable({}, {
