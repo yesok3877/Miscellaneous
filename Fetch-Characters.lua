@@ -3,9 +3,10 @@
     
     - custom character models are in use, with the character property being disregarded
     - script was executed upon spawn-in & other players have spawned as well
-    - character models have at least one BasePart
+    - character models have atleast one BasePart
+    - client does not have network ownership over the local character model
     - character models share the same name (e.g. 'Player' or 'Model')
-        * the logic may or may not falter if the model names are different (e.g. 'Player1' , 'Player2', 'Player3')
+        * the logic processing may or may not falter if the model names are different (e.g. 'Player1' , 'Player2', 'Player3')
     - allocated memory (i.e. garbage collection) is accessible
     - a table that contains all character models inside the workspace is present in memory
 --]]
@@ -33,6 +34,7 @@ assert(getgenv, "global environment is not present"); do
         game_path = game.GetFullName;
         --
         table_insert = table.insert;
+        table_find = table.find;
         table_move = table.move;
         --
         string_split = string.split;
@@ -192,28 +194,16 @@ local cache; do
         cache_allocated = {};
         -- wrapper function that captures our models from allocated values
         local function cache_trace(value_allocated)
-            local cache_instances = 0;
-            local cache_entries = cache_allocated;
-            --
-            for index, value in pairs(value_allocated) do
-                if (typeof(value) == "Instance") then
-                    local allocated = cache_models[value.name];
-                    --
-                    if (allocated and not cache_allocated[value.name]) then
-                        if (cache_enumerate(value_allocated) > #allocated) then
-                            cache_allocated = cache_entries;
-                            --
-                            break;
-                        else
-                            cache_allocated[value.name] = value_allocated;
-                            cache_instances += 1;
-                        end
-                    end;
-                end;
+            if (cache_enumerate(value_allocated) > players_maximum) then
+                return;
             end;
             --
-            if (cache_instances == 1 and cache_enumerate(value_allocated) > 1) then
-                cache_allocated = cache_entries;
+            for index, value in pairs(value_allocated) do
+                local allocated = (cache_models[tostring(index)] or cache_models[tostring(value)]);
+                --
+                if (allocated and not table_find(cache_allocated, allocated)) then
+                    table_insert(cache_allocated, allocated);
+                end;
             end;
         end;
         --
@@ -237,34 +227,30 @@ local cache; do
     warn("resolving allocated cache for final entry"); do
         local cache_entries = 0;
         -- logic instructs the cache to finalize on the entry of which is greater than others
-        for index, array in pairs(cache_allocated) do
-            local array_entries = cache_enumerate(array);
-            --
-            if (array_entries == players_maximum) then
+        for index, array in ipairs(cache_allocated) do
+            if (#array == players_maximum) then
                 cache = array;
                 --
                 break;
-            elseif (array_entries > cache_entries) then
-                cache_entries = array_entries;
+            elseif (#array > cache_entries) then
+                cache_entries = #array;
                 cache = array;
             end;
         end;
         -- with the assumption that our entries are autonomous, our final cache entry shall unify the others together
         if (cache_entries == 1) then
-            for index, array in pairs(cache_allocated) do
-                local array_entries = cache_enumerate(array);
-                --
-                table_move(array, 1, array_entries, cache_entries, cache);
-                cache_entries += array_entries;
+            for index, array in ipairs(cache_allocated) do
+                table_move(array, 1, #array, cache_entries, cache);
+                cache_entries += #array;
             end;
         end;
         --
         cache_validate(cache, "final cache entry could not be resolved", "final cache entries were made");
     end;
+    --
+    print(string_format("\ncached models in similarity of '%s' were generalized for their greater allocated sum", game_path(cache[1])));
 end;
 --
 for index, object in ipairs(cache) do
-    if (typeof(value) == "Instance") then
-        Instance.new("Highlight", object);
-    end;
+    Instance.new("Highlight", object);
 end;
