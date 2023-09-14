@@ -4,7 +4,7 @@ local cframe_look_at = CFrame.lookAt;
 local cframe_new = CFrame.new;
 
 local GRAPH_POINTS = { };
-local GRAPH_POINTS_MAX = 50;
+local GRAPH_POINTS_MAX = 25;
 local GRAPH_POSITIONS = { };
 
 local game_clone = game.Clone;
@@ -12,7 +12,7 @@ local game_destroy = game.Destroy;
 
 local instance_new = Instance.new;
 
-local CHARACTER = game.Players.PROTOSM4SHER.Character;
+local CHARACTER = game.Players.LocalPlayer.Character;
 local HUMANOID = CHARACTER.Humanoid;
 
 local table_clear = table.clear;
@@ -43,14 +43,14 @@ do
         return point;
     end
 
-    local VECTOR3_NULL = vector3_new();
-
     local POINT_REFERENCE = CHARACTER.HumanoidRootPart.Position;
 
     while task_wait( 0.1 ) do
-        local part_velocity = HUMANOID.MoveDirection * HUMANOID.WalkSpeed;
+        local humanoid_move_direction = HUMANOID.MoveDirection;
 
-        if ( part_velocity ~= VECTOR3_NULL ) then
+        POINT_REFERENCE += humanoid_move_direction * HUMANOID.WalkSpeed * 0.1;
+
+        if ( humanoid_move_direction.Magnitude ~= 0 ) then
             if ( #GRAPH_POSITIONS > GRAPH_POINTS_MAX ) then
                 for index = 1, #GRAPH_POINTS do
                     game_destroy( GRAPH_POINTS[index] );
@@ -61,8 +61,6 @@ do
 
                 warn( "cleared caches" );
             end
-
-            POINT_REFERENCE += part_velocity * 0.1;
 
             local part_position = POINT_REFERENCE;
 
